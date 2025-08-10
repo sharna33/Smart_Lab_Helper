@@ -21,7 +21,7 @@ It also comes with an AI Assistant powered by a Hugging Face model for quick hin
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 ```
 project/  
 │   
@@ -42,14 +42,15 @@ project/
 ```
 ---
 
-## ⚙️ Installation & Run
+## Installation & Run
 1. **Install Dependencies**  
 `pip install flask transformers torch`
 
 2. **Run the App**   
 `python app.py` 
 
-3.**Usage**   
+---
+## **Usage**   
 Visit `http://127.0.0.1:5000`   
 
 ---
