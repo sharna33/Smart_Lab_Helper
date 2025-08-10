@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Feedback</title>
+</head>
+<body>
+    <div class="container-fluid d-flex justify-content-center align-items-center" style="height: 100vh; overflow:auto;">
+        <div class="text-center w-100">
+            {% if feedback == 'Correct!' %}
+            <div class="alert alert-success p-5 mx-auto" role="alert" style="font-size:1.5rem; max-width: 500px;">
+                <span style="font-size:2.5rem;">🎉👏</span><br>
+                <strong>Great job!</strong><br>
+                <span>{{ feedback }}</span><br>
+                <span style="font-size:1.2rem;">Keep up the good work and keep learning! 🚀</span>
+            </div>
+            {% else %}
+            <div class="alert alert-danger p-4 mx-auto" role="alert" style="font-size:1.2rem; max-width: 500px;">
+                <span style="font-size:2rem;">❌</span><br>
+                <span>{{ feedback }}</span><br>
+                <span>Don't give up! Try again and you'll get it! 💪</span>
+            </div>
+            {% endif %}
+            <a href="/labs" class="btn btn-primary">Back to Labs</a>
+        </div>
+    </div>
+</body>
+</html>

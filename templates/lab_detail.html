@@ -1,0 +1,189 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{{ lab_name }}</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+
+
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/">Smart Lab Helper</a>
+                <div class="collapse navbar-collapse">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item"><a class="nav-link" href="/labs">Labs</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+                <div class="container" style="overflow:auto;">
+                        <!-- AI Assistant -->
+                        <div class="mb-4">
+                                <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#aiModal">Ask AI Assistant 🤖</button>
+                        </div>
+                        <!-- AI Modal -->
+                        <div class="modal fade" id="aiModal" tabindex="-1" aria-labelledby="aiModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                        <div class="modal-content">
+                                                <div class="modal-header">
+                                                        <h5 class="modal-title" id="aiModalLabel">AI Lab Assistant</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                        <form id="aiForm">
+                                                                <div class="mb-3">
+                                                                        <label for="aiQuestion" class="form-label">Ask a question about this lab:</label>
+                                                                        <textarea class="form-control" id="aiQuestion" rows="3" required placeholder="e.g. How do I start this lab?"></textarea>
+                                                                </div>
+                                                                <button type="submit" class="btn btn-primary">Ask</button>
+                                                        </form>
+                                                        <div id="aiAnswerBox" class="mt-4" style="display:none;">
+                                                                <div class="spinner-border text-primary" id="aiSpinner" role="status" style="display:none;"></div>
+                                                                <div id="aiAnswerText" class="mt-2"></div>
+                                                        </div>
+                                                </div>
+                                        </div>
+                                </div>
+                        </div>
+                <script>
+                // AI Assistant AJAX
+                document.getElementById('aiForm').addEventListener('submit', async function(e) {
+                        e.preventDefault();
+                        const question = document.getElementById('aiQuestion').value;
+                        const labName = {{ lab_name|tojson }};
+                        document.getElementById('aiAnswerBox').style.display = 'block';
+                        document.getElementById('aiSpinner').style.display = 'inline-block';
+                        document.getElementById('aiAnswerText').textContent = '';
+                        try {
+                                const response = await fetch('/ai-assist', {
+                                        method: 'POST',
+                                        headers: {
+                                                'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify({ question: question, lab_name: labName })
+                                });
+                                const data = await response.json();
+                                document.getElementById('aiAnswerText').textContent = data.answer;
+                        } catch (err) {
+                                document.getElementById('aiAnswerText').textContent = 'Sorry, there was an error contacting the AI.';
+                        }
+                        document.getElementById('aiSpinner').style.display = 'none';
+                });
+                </script>
+                <!-- Removed duplicate headline -->
+                <div class="card mb-4">
+                        <div class="card-body">
+                                {% set rendered = instructions | safe %}
+                                <div class="mb-0" id="lab-instructions"></div>
+                        </div>
+                </div>
+                                                                <button class="btn btn-info mb-3 me-2" id="hintBtn">Get Hint</button>
+                                <script>
+                                // Provide hints for each lab
+                                const hints = {
+                                        'Lab 1: Introduction to Python': 'Try using the print() function to display output.',
+                                        'Lab 2: Data Structures': 'Remember to use Python lists and dictionaries. Review how to create and print them.',
+                                        'Lab 3: Working with Lists': 'Use a list comprehension to filter out even numbers. The modulo operator % can help.',
+                                        'Lab 4: String Manipulation': 'Use the split() method to break the sentence into words, and join() to put them back together in reverse order.',
+                                        'Lab 5: Dictionary Operations': 'Convert the text to lowercase and split it into words. Use a dictionary to count occurrences.'
+                                };
+                                document.getElementById('hintBtn').addEventListener('click', function() {
+                                        const labName = {{ lab_name|tojson }};
+                                        alert('Hint: ' + (hints[labName] || 'No hint available for this lab.'));
+                                });
+                                </script>
+                                                                <button class="btn btn-warning mb-3" data-bs-toggle="modal" data-bs-target="#solutionModal">Show Solution</button>
+
+                                                                <!-- Solution Modal -->
+                                                                <div class="modal fade" id="solutionModal" tabindex="-1" aria-labelledby="solutionModalLabel" aria-hidden="true">
+                                                                        <div class="modal-dialog">
+                                                                                <div class="modal-content">
+                                                                                        <div class="modal-header">
+                                                                                                <h5 class="modal-title" id="solutionModalLabel">Solution</h5>
+                                                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                                        </div>
+                                                                                        <div class="modal-body">
+                                                                                                <pre id="solutionBox" class="mb-0 bg-light p-2 rounded"></pre>
+                                                                                        </div>
+                                                                                </div>
+                                                                        </div>
+                                                                </div>
+                <script>
+                // Provide solutions for each lab
+                const solutions = {
+                        'Lab 1: Introduction to Python': `def hello():\n    print('Hello, World!')`,
+                        'Lab 2: Data Structures': `# List example\nmy_list = [1, 2, 3, 4]\nprint(my_list)\n\n# Dictionary example\nmy_dict = {'a': 1, 'b': 2}\nprint(my_dict)`,
+                        'Lab 3: Working with Lists': `def remove_even_numbers(numbers):\n    return [num for num in numbers if num % 2 != 0]`,
+                        'Lab 4: String Manipulation': `def reverse_words(sentence):\n    return ' '.join(sentence.split()[::-1])`,
+                        'Lab 5: Dictionary Operations': `def count_word_frequencies(text):\n    words = text.lower().split()\n    freq = {}\n    for word in words:\n        freq[word] = freq.get(word, 0) + 1\n    return freq`
+                };
+                document.getElementById('solutionModal').addEventListener('show.bs.modal', function (event) {
+                        const labName = {{ lab_name|tojson }};
+                        document.getElementById('solutionBox').textContent = solutions[labName] || 'No solution available.';
+                });
+                </script>
+                                                                <form id="submissionForm" action="/submit/{{ lab_name }}" method="post">
+                                                                                                <div class="mb-3">
+                                                                                                                                <textarea name="submission" class="form-control" rows="5" placeholder="Enter your solution here"></textarea>
+                                                                                                </div>
+                                                                                                <button type="submit" class="btn btn-success">Submit</button>
+                                                                </form>
+                                                                <!-- Toast Notification -->
+                                                                <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+                                                                        <div id="feedbackToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                                                                                <div class="d-flex">
+                                                                                        <div class="toast-body" id="toastBody">
+                                                                                                <!-- Feedback message will appear here -->
+                                                                                        </div>
+                                                                                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                                                                                </div>
+                                                                        </div>
+                                                                </div>
+        </div>
+        <footer class="footer mt-auto py-3 bg-light text-center">
+            <div class="container">
+                <span class="text-muted">&copy; 2025 Smart Lab Helper</span>
+            </div>
+        </footer>
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+                <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+                <script>
+                // Render markdown instructions as HTML
+                const raw = {{ instructions|tojson }};
+                document.getElementById('lab-instructions').innerHTML = marked.parse(raw);
+                </script>
+                <script>
+                document.getElementById('submissionForm').addEventListener('submit', async function(e) {
+                        e.preventDefault();
+                        const form = e.target;
+                        const data = new FormData(form);
+                        const response = await fetch(form.action, {
+                                method: 'POST',
+                                body: data,
+                                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                        });
+                        const result = await response.json();
+                        const toastBody = document.getElementById('toastBody');
+                        let message = '';
+                        if (result.feedback === 'Correct!') {
+                                message = '<span style="font-size:2rem;">🎉👏</span> <strong>Great job!</strong><br>Correct!<br><span style="font-size:1.1rem;">Keep up the good work and keep learning! 🚀</span>';
+                                document.getElementById('feedbackToast').classList.remove('bg-danger');
+                                document.getElementById('feedbackToast').classList.add('bg-success');
+                        } else {
+                                message = '<span style="font-size:2rem;">❌</span> Try again.<br><span>Don\'t give up! Try again and you\'ll get it! 💪</span>';
+                                document.getElementById('feedbackToast').classList.remove('bg-success');
+                                document.getElementById('feedbackToast').classList.add('bg-danger');
+                        }
+                        toastBody.innerHTML = message;
+                        const toast = new bootstrap.Toast(document.getElementById('feedbackToast'));
+                        toast.show();
+                });
+                </script>
+</body>
+</html>
